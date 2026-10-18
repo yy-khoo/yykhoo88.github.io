@@ -1,0 +1,14 @@
+---
+title: "About"
+description: "About this technical notebook."
+---
+
+This site contains concise technical notes and numerical experiments related to quantitative finance, derivatives, model risk, market risk, and numerical methods.
+
+The content is a work in progress and will grow one note at a time.
+
+## Elsewhere
+
+- GitHub — TODO: add profile URL
+- LinkedIn — TODO: add profile URL
+

@@ -1,0 +1,16 @@
+---
+title: "Notes"
+description: "Technical notes and numerical experiments."
+listing:
+  contents: "*/index.qmd"
+  sort: "date desc"
+  type: default
+  fields: [date, title, description, categories]
+  categories: true
+  sort-ui: false
+  filter-ui: true
+  page-size: 20
+---
+
+A growing collection of short technical notes and numerical experiments.
+

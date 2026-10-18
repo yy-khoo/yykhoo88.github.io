@@ -1,0 +1,132 @@
+:root {
+  --yy-ink: #17212b;
+  --yy-muted: #5c6875;
+  --yy-accent: #24527a;
+  --yy-border: #dce2e8;
+  --yy-surface: #f6f8fa;
+}
+
+body {
+  color: var(--yy-ink);
+  font-size: 1.04rem;
+  line-height: 1.72;
+}
+
+.navbar {
+  border-bottom: 1px solid var(--yy-border);
+  background: rgba(255, 255, 255, 0.97);
+}
+
+.navbar-brand {
+  color: var(--yy-ink);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.navbar-nav .nav-link {
+  color: var(--yy-muted);
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: var(--yy-accent);
+}
+
+#quarto-content {
+  padding-top: 2.4rem;
+}
+
+.quarto-title h1,
+h1,
+h2,
+h3 {
+  color: var(--yy-ink);
+  letter-spacing: -0.018em;
+}
+
+.quarto-title h1 {
+  font-size: clamp(2.1rem, 6vw, 3.25rem);
+}
+
+h2 {
+  margin-top: 2.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--yy-border);
+}
+
+a {
+  color: var(--yy-accent);
+  text-underline-offset: 0.16em;
+}
+
+pre,
+code {
+  font-variant-ligatures: none;
+}
+
+div.sourceCode,
+.cell-output-display {
+  border: 1px solid var(--yy-border);
+  border-radius: 0.25rem;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.cell-output-display .quarto-figure,
+.cell-output-display figure,
+.cell-output-display img {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-width: 0 !important;
+}
+
+div.sourceCode {
+  background: var(--yy-surface);
+}
+
+.quarto-listing-default .listing-item {
+  padding: 1.35rem 0;
+  border-bottom-color: var(--yy-border);
+}
+
+.quarto-listing-default .listing-title {
+  color: var(--yy-ink);
+  font-size: 1.15rem;
+  font-weight: 650;
+}
+
+.quarto-listing-category {
+  color: var(--yy-accent);
+  border-color: var(--yy-border);
+}
+
+.page-footer {
+  margin-top: 4rem;
+  border-top: 1px solid var(--yy-border);
+  color: var(--yy-muted);
+}
+
+@media (min-width: 992px) {
+  main.content {
+    max-width: 760px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  #quarto-content {
+    padding-top: 1.4rem;
+  }
+
+  body {
+    font-size: 1rem;
+  }
+
+  .quarto-title h1 {
+    font-size: 2.15rem;
+  }
+
+  .quarto-listing-default .listing-item {
+    padding: 1.1rem 0;
+  }
+}

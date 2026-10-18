@@ -1,0 +1,52 @@
+---
+title: "Hello World"
+date: 2026-09-11
+description: "A first note to verify the publishing workflow, mathematics, Python execution, figures, and code highlighting."
+categories:
+  - Numerical Methods
+jupyter: python3
+execute:
+  enabled: true
+---
+
+This is the first note on the site. It exists to verify the complete authoring and publishing workflow before more substantial technical material is added.
+
+## Mathematics
+
+The Black–Scholes call-price expression provides a compact test of mathematical rendering:
+
+$$
+C = S_0 N(d_1) - K e^{-rT} N(d_2).
+$$
+
+## Python execution and figures
+
+The following cell executes during rendering and produces a small plot of $y=x^2$.
+
+```{python}
+#| label: fig-square
+#| fig-cap: "A simple numerical plot of y = x²."
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(-3, 3, 61)
+y = x**2
+
+fig, ax = plt.subplots(figsize=(6, 3.5))
+ax.plot(x, y, color="#24527a", linewidth=2)
+ax.set(xlabel="x", ylabel="y", title=r"$y = x^2$")
+ax.grid(alpha=0.2)
+plt.show()
+```
+
+## Syntax highlighting
+
+This non-executing block confirms that ordinary source code is highlighted correctly:
+
+```python
+def square(value: float) -> float:
+    """Return the square of a number."""
+    return value**2
+```
+

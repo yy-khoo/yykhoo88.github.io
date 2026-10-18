@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: _site
+  execute-dir: project
+
+website:
+  title: "YY"
+  description: "Technical notes on quantitative finance, derivatives, risk, and numerical methods."
+  favicon: assets/favicon.svg
+  navbar:
+    title: "YY"
+    left:
+      - text: "Notes"
+        href: notes/index.qmd
+      - text: "About"
+        href: about.qmd
+  page-footer:
+    left: "© YY"
+    right: "Built with Quarto"
+
+format:
+  html:
+    theme: cosmo
+    css: assets/styles.css
+    toc: true
+    code-copy: true
+    code-overflow: wrap
+    html-math-method: mathjax
+    anchor-sections: true
+
+execute:
+  echo: true
+  warning: false
+  error: false

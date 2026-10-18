@@ -1,0 +1,21 @@
+---
+title: "YY"
+page-layout: article
+listing:
+  id: latest-notes
+  contents: "notes/*/index.qmd"
+  sort: "date desc"
+  type: default
+  fields: [date, title, description, categories]
+  max-items: 3
+  sort-ui: false
+  filter-ui: false
+---
+
+Technical notes on quantitative finance, derivatives, model validation, market risk, and numerical methods.
+
+## Latest Notes
+
+:::{#latest-notes}
+:::
+

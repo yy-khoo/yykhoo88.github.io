@@ -1,0 +1,310 @@
+---
+title: "European Call Greeks: A Visual Risk Map"
+date: 2026-09-11
+description: "Visual intuition for Black–Scholes call value, delta, gamma, vega, and theta across spot, maturity, and volatility."
+categories:
+  - Derivatives Risk Atlas
+  - Options
+  - Model Validation
+jupyter: python3
+code-fold: true
+code-summary: "Show Python"
+execute:
+  enabled: true
+---
+
+**Where does option risk actually live across spot and maturity?**
+
+The Black–Scholes formulas answer the pointwise question, but the location and concentration of risk are much easier to see in curves. I use a plain European call as a controlled case: a non-dividend-paying stock with $K=100$, $r=3\%$, and $\sigma=20\%$. The focus is not the formulas themselves, but how quickly the risk profile changes as expiry approaches.
+
+## Reference setup
+
+The call value is
+
+$$
+C(S,K,T,r,\sigma)=S N(d_1)-K e^{-rT}N(d_2),
+$$
+
+where
+
+$$
+\begin{aligned}
+d_1&=\frac{\ln(S/K)+(r+\tfrac12\sigma^2)T}{\sigma\sqrt{T}},\\
+d_2&=d_1-\sigma\sqrt{T}.
+\end{aligned}
+$$
+
+All plots use the same $S\in[50,150]$ grid and mark $S=K$. I use 1,001 spot points because a coarse grid can make the one-week gamma profile look materially less concentrated than it is.
+
+```{python}
+#| label: setup
+#| include: false
+
+import matplotlib.pyplot as plt
+import numpy as np
+from IPython.display import Markdown, display
+
+from src.black_scholes import (
+    call_delta,
+    call_gamma,
+    call_price,
+    call_theta,
+    call_vega,
+    finite_difference_greeks,
+)
+
+K = 100.0
+r = 0.03
+sigma = 0.20
+spots = np.linspace(50.0, 150.0, 1001)
+maturities = {
+    "2Y": 2.0,
+    "1Y": 1.0,
+    "3M": 0.25,
+    "1M": 1.0 / 12.0,
+    "1W": 1.0 / 52.0,
+}
+maturity_colors = dict(
+    zip(maturities, plt.cm.viridis(np.linspace(0.08, 0.88, len(maturities))))
+)
+
+plt.style.use("seaborn-v0_8-whitegrid")
+plt.rcParams.update(
+    {
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "axes.titleweight": "semibold",
+        "figure.dpi": 120,
+    }
+)
+
+
+def finish_spot_axis(ax, ylabel, *, xlabel=True):
+    ax.axvline(K, color="0.35", linewidth=1.0, linestyle="--", label="Strike")
+    ax.set(xlim=(spots.min(), spots.max()), ylabel=ylabel)
+    if xlabel:
+        ax.set_xlabel("Spot")
+    ax.grid(alpha=0.22)
+
+
+def plot_across_maturities(ax, greek, ylabel):
+    for label, maturity in maturities.items():
+        ax.plot(
+            spots,
+            greek(spots, K, maturity, r, sigma),
+            label=label,
+            color=maturity_colors[label],
+            linewidth=1.8,
+        )
+    finish_spot_axis(ax, ylabel)
+    ax.legend(ncol=3, frameon=False)
+```
+
+## Start with the value curve
+
+```{python}
+#| label: fig-call-value-maturity
+#| fig-cap: "Call value approaches the terminal payoff as maturity contracts."
+#| fig-width: 8
+#| fig-height: 4.8
+
+fig, ax = plt.subplots()
+ax.plot(spots, np.maximum(spots - K, 0.0), color="0.15", linestyle=":", linewidth=2.0, label="Payoff")
+for label, maturity in maturities.items():
+    ax.plot(
+        spots,
+        call_price(spots, K, maturity, r, sigma),
+        label=label,
+        color=maturity_colors[label],
+        linewidth=1.8,
+    )
+finish_spot_axis(ax, "Call value")
+ax.legend(ncol=3, frameon=False)
+plt.show()
+```
+
+The feature I would pay attention to is the width of the transition around the strike. It contracts sharply with maturity. The Greeks below are different views of that narrowing region.
+
+## Delta: the transition region
+
+```{python}
+#| label: fig-call-delta
+#| fig-cap: "Call delta transitions from zero to one across the exercise boundary."
+#| fig-width: 8
+#| fig-height: 4.8
+
+fig, ax = plt.subplots()
+plot_across_maturities(ax, call_delta, "Delta")
+ax.set_ylim(-0.03, 1.03)
+plt.show()
+```
+
+For reference, $\Delta=N(d_1)$. The levels near zero and one are not the interesting part of this chart. The useful information is where delta changes rapidly, and how narrow that region becomes near expiry. That is where a small spot move changes the hedge materially.
+
+The transition is not centred mechanically on the cash strike. Rates, carry, volatility, and maturity enter through $d_1$; even in this simple case, spot ATM does not imply a delta of exactly $0.5$.
+
+## Gamma: concentration near expiry
+
+```{python}
+#| label: fig-call-gamma
+#| fig-cap: "Short maturity concentrates gamma near the strike."
+#| fig-width: 8
+#| fig-height: 4.8
+
+fig, ax = plt.subplots()
+plot_across_maturities(ax, call_gamma, "Gamma")
+plt.show()
+```
+
+The analytic reference is
+
+$$
+\Gamma=\frac{\partial^2 C}{\partial S^2}
+=\frac{\phi(d_1)}{S\sigma\sqrt{T}}.
+$$
+
+What I find useful here is how quickly gamma stops being a broad exposure and becomes a local one. At one week, most of the curvature sits in a narrow band near the strike. A position can cross that band in an ordinary spot move, so a hedge inferred from one point can age badly before the next rebalance.
+
+This is also the first validation warning. The formula is smooth, but a grid or finite-difference bump that is wide relative to the peak will average over the very feature being measured.
+
+## Vega: similar location, different maturity behaviour
+
+The chart reports vega per one volatility point, i.e. $\mathcal{V}/100$.
+
+```{python}
+#| label: fig-call-vega
+#| fig-cap: "Vega is largest where the exercise outcome remains uncertain."
+#| fig-width: 8
+#| fig-height: 4.8
+
+fig, ax = plt.subplots()
+plot_across_maturities(ax, lambda S, K, T, r, vol: call_vega(S, K, T, r, vol) / 100.0, "Vega per 1 vol point")
+plt.show()
+```
+
+Per unit change in volatility,
+
+$$
+\mathcal{V}=\frac{\partial C}{\partial\sigma}
+=S\phi(d_1)\sqrt{T}.
+$$
+
+Vega occupies roughly the same decision region as gamma, but maturity pushes the two exposures in opposite directions. Near expiry, gamma becomes taller and narrower while vega collapses because there is little time left for additional dispersion. Treating both as generic measures of “optionality” hides a useful distinction: gamma is becoming more acute precisely as vega is disappearing.
+
+## Theta: read it with gamma
+
+The chart scales annual calendar theta to a daily amount using $\Theta/365$.
+
+```{python}
+#| label: fig-call-theta
+#| fig-cap: "Daily theta becomes sharply negative around ATM near expiry."
+#| fig-width: 8
+#| fig-height: 4.8
+
+fig, ax = plt.subplots()
+plot_across_maturities(ax, lambda S, K, T, r, vol: call_theta(S, K, T, r, vol) / 365.0, "Theta per calendar day")
+plt.show()
+```
+
+Annual calendar theta is
+
+$$
+\Theta=-\frac{S\phi(d_1)\sigma}{2\sqrt{T}}
+-rKe^{-rT}N(d_2).
+$$
+
+I would not read this plot independently of gamma. The sharp negative pocket near the strike is the carry cost attached to the same local curvature seen above. In the Black–Scholes PDE,
+
+$$
+\Theta+\frac12\sigma^2S^2\Gamma+rS\Delta-rV=0,
+$$
+
+the diffusion term associated with positive gamma is offset by theta and carry. The co-location matters more than either headline Greek: the position earns or loses most of its gamma/theta economics inside a shrinking spot interval.
+
+## How volatility redistributes risk
+
+Fix $T=1$ year and vary $\sigma$. The issue is not only how much the option is worth, but where its risk sits across spot.
+
+```{python}
+#| label: fig-volatility-risk-map
+#| fig-cap: "Higher volatility raises value and distributes the delta transition and gamma over a wider spot region."
+#| fig-width: 8
+#| fig-height: 10
+
+volatilities = {"10%": 0.10, "20%": 0.20, "40%": 0.40, "60%": 0.60}
+vol_colors = dict(zip(volatilities, plt.cm.cividis(np.linspace(0.08, 0.9, len(volatilities)))))
+panels = [
+    (call_price, "Call value", "PV"),
+    (call_delta, "Delta", "Delta"),
+    (call_gamma, "Gamma", "Gamma"),
+]
+
+fig, axes = plt.subplots(3, 1, sharex=True, figsize=(8, 10))
+for ax, (measure, ylabel, title) in zip(axes, panels):
+    for label, vol in volatilities.items():
+        ax.plot(
+            spots,
+            measure(spots, K, 1.0, r, vol),
+            label=label,
+            color=vol_colors[label],
+            linewidth=1.8,
+        )
+    finish_spot_axis(ax, ylabel, xlabel=ax is axes[-1])
+    ax.set_title(title, loc="left")
+
+axes[0].legend(ncol=4, frameon=False, title="Volatility")
+fig.tight_layout()
+plt.show()
+```
+
+Higher volatility broadens the delta transition and distributes gamma across a wider spot range. At low volatility, the risk is more concentrated. Cash gamma contains a $1/S$ scaling, so the peak need not sit exactly at the strike; in this setup it moves lower in spot as volatility rises. The practical point is that volatility changes where hedge risk sits, not only the option PV.
+
+## Numerical verification
+
+Analytic formulas are reference values, not independent evidence that an implementation is correct. The table compares analytic delta, gamma, and vega with central differences at $S\in\{80,100,120\}$, using $T=1$, a spot bump of $0.10$, and an absolute volatility bump of $10^{-4}$ (one volatility basis point).
+
+```{python}
+#| label: tbl-greek-validation
+
+rows = []
+for spot in (80.0, 100.0, 120.0):
+    analytic = {
+        "Delta": float(call_delta(spot, K, 1.0, r, sigma)),
+        "Gamma": float(call_gamma(spot, K, 1.0, r, sigma)),
+        "Vega": float(call_vega(spot, K, 1.0, r, sigma)),
+    }
+    finite_difference = finite_difference_greeks(
+        spot,
+        K,
+        1.0,
+        r,
+        sigma,
+        spot_bump=0.10,
+        volatility_bump=1.0e-4,
+    )
+    for greek, key in (("Delta", "delta"), ("Gamma", "gamma"), ("Vega", "vega")):
+        estimate = float(finite_difference[key])
+        rows.append((spot, greek, analytic[greek], estimate, abs(analytic[greek] - estimate)))
+
+assert max(row[4] for row in rows if row[1] == "Delta") < 2.0e-6
+assert max(row[4] for row in rows if row[1] == "Gamma") < 1.0e-7
+assert max(row[4] for row in rows if row[1] == "Vega") < 1.0e-5
+
+table = [
+    "| Spot | Greek | Analytic | Central difference | Absolute error |",
+    "|---:|:---|---:|---:|---:|",
+]
+table.extend(
+    f"| {spot:.0f} | {greek} | {exact:.8f} | {estimate:.8f} | {error:.2e} |"
+    for spot, greek, exact, estimate, error in rows
+)
+display(Markdown("\n".join(table)))
+```
+
+The agreement is strong, but these are deliberately benign test points: one-year maturity, liquid-looking spots, and fixed bumps chosen for this scale. They confirm the formulas and finite-difference implementation are consistent here; they do not establish that the same bumps remain suitable across the surface.
+
+From a validation perspective, the difficult region is short maturity and close to the strike. Gamma is then estimated from the small residual of three similar PVs. A wide spot bump smooths across the peak; a very narrow bump exposes floating-point cancellation. Vega has the analogous problem when the volatility bump produces a PV change close to numerical precision. A pointwise pass at $T=1$ can therefore coexist with poor numerical Greeks in the part of the surface where risk is most concentrated.
+
+For a put on the same stock, put–call parity gives $\Delta_{\text{put}}=\Delta_{\text{call}}-1$; gamma and vega are the same under this model. The risk-shape discussion therefore carries across without duplicating the plots.
+
+The next test is a bump-size sweep at one week around $S=K$: where does truncation error give way to cancellation, and how should the bump scale with the width of the gamma peak?
