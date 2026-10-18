@@ -6,9 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Earlier experiments and computing notes from the previous website.">
+<meta name="dcterms.date" content="2020-05-23">
+<meta name="description" content="A preserved 2020 walkthrough of a WordPress installation on Lightsail.">
 
-<title>Archive – YY Khoo</title>
+<title>Hosting WordPress with Amazon Lightsail – YY Khoo</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -27,29 +28,62 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<link href="../assets/favicon.svg" rel="icon" type="image/svg+xml">
-<script src="../site_libs/quarto-listing/list.min.js"></script>
-<script src="../site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-2f5524832805d734b96ee676820b2dda.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-2f5524832805d734b96ee676820b2dda.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -77,67 +111,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="../assets/styles.css">
+<link rel="stylesheet" href="../../assets/styles.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -147,7 +123,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">YY Khoo</span>
     </a>
   </div>
@@ -158,19 +134,15 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../notes/index.html"> 
+    <a class="nav-link" href="../../notes/index.html"> 
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../projects.html"> 
+    <a class="nav-link" href="../../projects.html"> 
 <span class="menu-text">Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../archive/index.html" aria-current="page"> 
-<span class="menu-text">Archive</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -185,19 +157,32 @@ window.Quarto = {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="QXJjaGl2ZQ==">Archive <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Q29tcHV0aW5n">Computing <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TnVtZXJpY2FsJTIwTWV0aG9kcw==">Numerical Methods <span class="quarto-category-count">(1)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sign-up-for-amazon-aws" id="toc-sign-up-for-amazon-aws" class="nav-link active" data-scroll-target="#sign-up-for-amazon-aws">Sign Up for Amazon AWS</a></li>
+  <li><a href="#creating-a-wordpress-instance" id="toc-creating-a-wordpress-instance" class="nav-link" data-scroll-target="#creating-a-wordpress-instance">Creating a wordpress instance</a></li>
+  <li><a href="#assign-a-static-address" id="toc-assign-a-static-address" class="nav-link" data-scroll-target="#assign-a-static-address">Assign a static address</a></li>
+  <li><a href="#get-admin-password-and-login" id="toc-get-admin-password-and-login" class="nav-link" data-scroll-target="#get-admin-password-and-login">Get admin password and login</a></li>
+  <li><a href="#connecting-a-domain-name-to-the-host." id="toc-connecting-a-domain-name-to-the-host." class="nav-link" data-scroll-target="#connecting-a-domain-name-to-the-host.">Connecting a domain name to the host.</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Archive</h1>
-</div>
+<h1 class="title">Hosting WordPress with Amazon Lightsail</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Computing</div>
+  </div>
+  </div>
 
 <div>
   <div class="description">
-    Earlier experiments and computing notes from the previous website.
+    A preserved 2020 walkthrough of a WordPress installation on Lightsail.
   </div>
 </div>
 
@@ -205,6 +190,12 @@ window.Quarto = {
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 23, 2020</p>
+    </div>
+  </div>
   
     
   </div>
@@ -214,70 +205,56 @@ window.Quarto = {
 </header>
 
 
-<p>Earlier experiments and tutorials, preserved with their original publication dates. These articles reflect the tools and assumptions used at the time; individual notes explain their limitations.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Historical tutorial
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Originally published in May 2020. Screenshots, prices, console navigation, and Bitnami paths describe the setup at that time and have not been checked against the current service. In this article, “VPN” is an old wording error: the steps concern a virtual server instance.</p>
+</div>
+</div>
+<p><img src="images/wpamazon.png" class="img-fluid" width="500"></p>
+<p>Some programming hobby. Let’s attempt to build a <a href="https://wordpress.com/">wordpress</a> website using <a href="https://aws.amazon.com/lightsail/">Amazon Lightsail</a>. This is an easy tutorial and we should be able to build it in less than 10 minutes.</p>
+<section id="sign-up-for-amazon-aws" class="level3">
+<h3 class="anchored" data-anchor-id="sign-up-for-amazon-aws">Sign Up for Amazon AWS</h3>
+<p>First of course, head over to <a href="https://aws.amazon.com/">Amazon AWS</a> and sign yourself up! You’ll be prompted to give a credit card, but if used right the charges should be minimal. After that, you’ll be prompted with the AWS management console. On the “find services” tab, put in “Amazon Lightsail”. You’ll be shown the lightsail page.</p>
+<p><img src="images/lightsail.png" class="img-fluid" width="800"></p>
+</section>
+<section id="creating-a-wordpress-instance" class="level3">
+<h3 class="anchored" data-anchor-id="creating-a-wordpress-instance">Creating a wordpress instance</h3>
+<p>To create a VPN instannce, just click on “create an instance”, then choose an instance location (usually it is default to whichever closest to your current location). Select “linux/unix” platform, and select a blueprint “wordpress”. In this case the VPN will be pre-installed with Linux and <a href="https://bitnami.com/stack/wordpress">Bitnami</a> version of wordpress.</p>
+<p><img src="images/lightsail2.png" class="img-fluid" width="450"></p>
+<p>Scroll further downwards and you’ll be presented with choices, such as launch script or SSH key pairs. You’ll be fine not doing any of them for now. Also you can choose your instance plan. For starter, let’s use the cheapest $3.5 plan. It’ll generally work for websites with low volumes. Finally click on “create instance”.</p>
+</section>
+<section id="assign-a-static-address" class="level3">
+<h3 class="anchored" data-anchor-id="assign-a-static-address">Assign a static address</h3>
+<p>Next, we’ll need to assign a static address to the VPN instance. It’s free of charge, as long as you keep the VPN server up and running. To do that, go to the “lightsail” page, then choose “networking”. Next click on “create static IP”. Remember to attach the IP to the VPN instance you’ve just created. Oh yes, remember the IP address!</p>
+<p><img src="images/static.png" class="img-fluid" width="800"></p>
+</section>
+<section id="get-admin-password-and-login" class="level3">
+<h3 class="anchored" data-anchor-id="get-admin-password-and-login">Get admin password and login</h3>
+<p>We’re not there yet! Now you’ll need to login into the wordpress. To do that, you’ll need a user/password. The fastest way to get your password is via SSH connection to your VPN server. To do that, go back to the lightsail page, on your VPN instance, click on the SSH button. The remote SSH session should start. Now type in the following</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cat bitnami_application_password</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><img src="images/bitnami.png" class="img-fluid" width="800"></p>
+<p>Your user will be “user” with the password displayed. To login, just go to your wordpress using the static IP address previously, and click on the login button on the lower right corner.</p>
+</section>
+<section id="connecting-a-domain-name-to-the-host." class="level3">
+<h3 class="anchored" data-anchor-id="connecting-a-domain-name-to-the-host.">Connecting a domain name to the host.</h3>
+<p>No one will connect to your website via an IP address (well, try memorizing it). Anyway, I assume you have a domain bought. To redirect the domain to your static IP address, just add an “A record” with host “@” and value being the static IP address.</p>
+<p>After that, you’ll need to also configure wordpress to <a href="https://docs.bitnami.com/bch/apps/wordpress/administration/configure-domain/">redirect</a> to the right domain name. To do that, connect to your VPN’s SSH session, then go to</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">/</span>opt<span class="op">/</span>bitnami<span class="op">/</span>apps<span class="op">/</span>wordpress<span class="op">/</span>htdocs<span class="op">/</span>wp<span class="op">-</span>config.php</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>And change the field “define(‘WP_SITEURL’) and (‘WP_HOME’)” to your domain name. You’re done!</p>
+<p><img src="images/wp_siteurl.png" class="img-fluid" width="500"></p>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="listing-actions-group">
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
-    </div>
-</div>
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="Q29tcHV0aW5nJTJDQXJjaGl2ZQ==" data-listing-date-sort="1590163200000" data-listing-file-modified-sort="1792301707574" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="491">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../archive/wordpress-lightsail/index.html" class="no-external">Hosting WordPress with Amazon Lightsail</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('Q29tcHV0aW5n'); return false;">Computing</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('QXJjaGl2ZQ=='); return false;">Archive</div>
-
-</div>
-<div class="delink listing-description"><a href="../archive/wordpress-lightsail/index.html" class="no-external">
-<p>A preserved 2020 walkthrough of a WordPress installation on Lightsail.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../archive/wordpress-lightsail/index.html" class="no-external">
-<div class="listing-date">
-May 23, 2020
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="TnVtZXJpY2FsJTIwTWV0aG9kcyUyQ0FyY2hpdmU=" data-listing-date-sort="1584633600000" data-listing-file-modified-sort="1792301707565" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1131">
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="../archive/seir-model/index.html" class="no-external">Modelling COVID-19 Using an SEIR Model</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('TnVtZXJpY2FsJTIwTWV0aG9kcw=='); return false;">Numerical Methods</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('QXJjaGl2ZQ=='); return false;">Archive</div>
-
-</div>
-<div class="delink listing-description"><a href="../archive/seir-model/index.html" class="no-external">
-<p>A historical 2020 experiment with compartmental modelling and Euler integration.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="../archive/seir-model/index.html" class="no-external">
-<div class="listing-date">
-Mar 20, 2020
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

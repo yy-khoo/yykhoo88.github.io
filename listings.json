@@ -4,14 +4,9 @@
     "items": [
       "/notes/european-call-greeks/index.html",
       "/notes/sofr-curve/index.html",
-      "/notes/gamma-theta/index.html"
-    ]
-  },
-  {
-    "listing": "/archive/index.html",
-    "items": [
-      "/archive/wordpress-lightsail/index.html",
-      "/archive/seir-model/index.html"
+      "/notes/gamma-theta/index.html",
+      "/notes/wordpress-lightsail/index.html",
+      "/notes/seir-model/index.html"
     ]
   },
   {
@@ -19,7 +14,9 @@
     "items": [
       "/notes/european-call-greeks/index.html",
       "/notes/sofr-curve/index.html",
-      "/notes/gamma-theta/index.html"
+      "/notes/gamma-theta/index.html",
+      "/notes/wordpress-lightsail/index.html",
+      "/notes/seir-model/index.html"
     ]
   }
 ]
