@@ -4,7 +4,35 @@
     "href": "notes/index.html",
     "title": "Notes",
     "section": "",
-    "text": "A growing collection of short technical notes and numerical experiments.\n\n\n\n\n\n\n    \n      \n      \n    \n\n\n\n\n\nEuropean Call Greeks: A Visual Risk Map\n\n\n\nDerivatives Risk Atlas\n\nOptions\n\nModel Validation\n\n\n\nVisual intuition for Black–Scholes call value, delta, gamma, vega, and theta across spot, maturity, and volatility.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\n\n\nHello World\n\n\n\nNumerical Methods\n\n\n\nA first note to verify the publishing workflow, mathematics, Python execution, figures, and code highlighting.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\nNo matching items"
+    "text": "A growing collection of short technical notes and numerical experiments.\n\n\n\n\n\n\n    \n      \n      \n    \n\n\n\n\n\nEuropean Call Greeks: A Visual Risk Map\n\n\n\nDerivatives Risk Atlas\n\nOptions\n\nModel Validation\n\n\n\nVisual intuition for Black–Scholes call value, delta, gamma, vega, and theta across spot, maturity, and volatility.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "YY Khoo",
+    "section": "",
+    "text": "Technical notes on quantitative finance, derivatives, model validation, market risk, and numerical methods."
+  },
+  {
+    "objectID": "index.html#latest-notes",
+    "href": "index.html#latest-notes",
+    "title": "YY Khoo",
+    "section": "Latest Notes",
+    "text": "Latest Notes\n\n\n\n\n\nEuropean Call Greeks: A Visual Risk Map\n\n\n\nDerivatives Risk Atlas\n\nOptions\n\nModel Validation\n\n\n\nVisual intuition for Black–Scholes call value, delta, gamma, vega, and theta across spot, maturity, and volatility.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "YY Khoo is a quantitative analyst interested in derivative pricing and anything interesting."
+  },
+  {
+    "objectID": "about.html#elsewhere",
+    "href": "about.html#elsewhere",
+    "title": "About",
+    "section": "Elsewhere",
+    "text": "Elsewhere\n\nGitHub: yykhoo88\nLinkedIn: TODO."
   },
   {
     "objectID": "notes/european-call-greeks/index.html",
@@ -68,61 +96,5 @@
     "title": "European Call Greeks: A Visual Risk Map",
     "section": "Numerical verification",
     "text": "Numerical verification\nAnalytic formulas are reference values, not independent evidence that an implementation is correct. The table compares analytic delta, gamma, and vega with central differences at \\(S\\in\\{80,100,120\\}\\), using \\(T=1\\), a spot bump of \\(0.10\\), and an absolute volatility bump of \\(10^{-4}\\) (one volatility basis point).\n\n\nShow Python\nrows = []\nfor spot in (80.0, 100.0, 120.0):\n    analytic = {\n        \"Delta\": float(call_delta(spot, K, 1.0, r, sigma)),\n        \"Gamma\": float(call_gamma(spot, K, 1.0, r, sigma)),\n        \"Vega\": float(call_vega(spot, K, 1.0, r, sigma)),\n    }\n    finite_difference = finite_difference_greeks(\n        spot,\n        K,\n        1.0,\n        r,\n        sigma,\n        spot_bump=0.10,\n        volatility_bump=1.0e-4,\n    )\n    for greek, key in ((\"Delta\", \"delta\"), (\"Gamma\", \"gamma\"), (\"Vega\", \"vega\")):\n        estimate = float(finite_difference[key])\n        rows.append((spot, greek, analytic[greek], estimate, abs(analytic[greek] - estimate)))\n\nassert max(row[4] for row in rows if row[1] == \"Delta\") &lt; 2.0e-6\nassert max(row[4] for row in rows if row[1] == \"Gamma\") &lt; 1.0e-7\nassert max(row[4] for row in rows if row[1] == \"Vega\") &lt; 1.0e-5\n\ntable = [\n    \"| Spot | Greek | Analytic | Central difference | Absolute error |\",\n    \"|---:|:---|---:|---:|---:|\",\n]\ntable.extend(\n    f\"| {spot:.0f} | {greek} | {exact:.8f} | {estimate:.8f} | {error:.2e} |\"\n    for spot, greek, exact, estimate, error in rows\n)\ndisplay(Markdown(\"\\n\".join(table)))\n\n\n\n\nTable 1\n\n\n\n\n\n\nSpot\nGreek\nAnalytic\nCentral difference\nAbsolute error\n\n\n\n\n80\nDelta\n0.19332248\n0.19332367\n1.19e-06\n\n\n80\nGamma\n0.01714136\n0.01714132\n3.85e-08\n\n\n80\nVega\n21.94094409\n21.94094230\n1.79e-06\n\n\n100\nDelta\n0.59870633\n0.59870560\n7.25e-07\n\n\n100\nGamma\n0.01933341\n0.01933338\n2.85e-08\n\n\n100\nVega\n38.66681168\n38.66681156\n1.25e-07\n\n\n120\nDelta\n0.87730259\n0.87730179\n8.01e-07\n\n\n120\nGamma\n0.00846633\n0.00846634\n1.38e-08\n\n\n120\nVega\n24.38301754\n24.38301537\n2.18e-06\n\n\n\n\n\n\n\n\nThe agreement is strong, but these are deliberately benign test points: one-year maturity, liquid-looking spots, and fixed bumps chosen for this scale. They confirm the formulas and finite-difference implementation are consistent here; they do not establish that the same bumps remain suitable across the surface.\nFrom a validation perspective, the difficult region is short maturity and close to the strike. Gamma is then estimated from the small residual of three similar PVs. A wide spot bump smooths across the peak; a very narrow bump exposes floating-point cancellation. Vega has the analogous problem when the volatility bump produces a PV change close to numerical precision. A pointwise pass at \\(T=1\\) can therefore coexist with poor numerical Greeks in the part of the surface where risk is most concentrated.\nFor a put on the same stock, put–call parity gives \\(\\Delta_{\\text{put}}=\\Delta_{\\text{call}}-1\\); gamma and vega are the same under this model. The risk-shape discussion therefore carries across without duplicating the plots.\nThe next test is a bump-size sweep at one week around \\(S=K\\): where does truncation error give way to cancellation, and how should the bump scale with the width of the gamma peak?"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "This site contains concise technical notes and numerical experiments related to quantitative finance, derivatives, model risk, market risk, and numerical methods.\nThe content is a work in progress and will grow one note at a time."
-  },
-  {
-    "objectID": "about.html#elsewhere",
-    "href": "about.html#elsewhere",
-    "title": "About",
-    "section": "Elsewhere",
-    "text": "Elsewhere\n\nGitHub — TODO: add profile URL\nLinkedIn — TODO: add profile URL"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "YY",
-    "section": "",
-    "text": "Technical notes on quantitative finance, derivatives, model validation, market risk, and numerical methods."
-  },
-  {
-    "objectID": "index.html#latest-notes",
-    "href": "index.html#latest-notes",
-    "title": "YY",
-    "section": "Latest Notes",
-    "text": "Latest Notes\n\n\n\n\n\nEuropean Call Greeks: A Visual Risk Map\n\n\n\nDerivatives Risk Atlas\n\nOptions\n\nModel Validation\n\n\n\nVisual intuition for Black–Scholes call value, delta, gamma, vega, and theta across spot, maturity, and volatility.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\n\n\nHello World\n\n\n\nNumerical Methods\n\n\n\nA first note to verify the publishing workflow, mathematics, Python execution, figures, and code highlighting.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "notes/hello-world/index.html",
-    "href": "notes/hello-world/index.html",
-    "title": "Hello World",
-    "section": "",
-    "text": "This is the first note on the site. It exists to verify the complete authoring and publishing workflow before more substantial technical material is added."
-  },
-  {
-    "objectID": "notes/hello-world/index.html#mathematics",
-    "href": "notes/hello-world/index.html#mathematics",
-    "title": "Hello World",
-    "section": "Mathematics",
-    "text": "Mathematics\nThe Black–Scholes call-price expression provides a compact test of mathematical rendering:\n\\[\nC = S_0 N(d_1) - K e^{-rT} N(d_2).\n\\]"
-  },
-  {
-    "objectID": "notes/hello-world/index.html#python-execution-and-figures",
-    "href": "notes/hello-world/index.html#python-execution-and-figures",
-    "title": "Hello World",
-    "section": "Python execution and figures",
-    "text": "Python execution and figures\nThe following cell executes during rendering and produces a small plot of \\(y=x^2\\).\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.linspace(-3, 3, 61)\ny = x**2\n\nfig, ax = plt.subplots(figsize=(6, 3.5))\nax.plot(x, y, color=\"#24527a\", linewidth=2)\nax.set(xlabel=\"x\", ylabel=\"y\", title=r\"$y = x^2$\")\nax.grid(alpha=0.2)\nplt.show()\n\n\n\n\n\n\n\nFigure 1: A simple numerical plot of y = x²."
-  },
-  {
-    "objectID": "notes/hello-world/index.html#syntax-highlighting",
-    "href": "notes/hello-world/index.html#syntax-highlighting",
-    "title": "Hello World",
-    "section": "Syntax highlighting",
-    "text": "Syntax highlighting\nThis non-executing block confirms that ordinary source code is highlighted correctly:\ndef square(value: float) -&gt; float:\n    \"\"\"Return the square of a number.\"\"\"\n    return value**2"
   }
 ]

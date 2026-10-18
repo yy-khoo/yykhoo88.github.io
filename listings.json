@@ -2,15 +2,13 @@
   {
     "listing": "/notes/index.html",
     "items": [
-      "/notes/european-call-greeks/index.html",
-      "/notes/hello-world/index.html"
+      "/notes/european-call-greeks/index.html"
     ]
   },
   {
     "listing": "/index.html",
     "items": [
-      "/notes/european-call-greeks/index.html",
-      "/notes/hello-world/index.html"
+      "/notes/european-call-greeks/index.html"
     ]
   }
 ]
