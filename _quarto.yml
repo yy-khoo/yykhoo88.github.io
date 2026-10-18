@@ -4,18 +4,18 @@ project:
   execute-dir: project
 
 website:
-  title: "YY"
+  title: "YY Khoo"
   description: "Technical notes on quantitative finance, derivatives, risk, and numerical methods."
   favicon: assets/favicon.svg
   navbar:
-    title: "YY"
+    title: "YY Khoo"
     left:
       - text: "Notes"
         href: notes/index.qmd
       - text: "About"
         href: about.qmd
   page-footer:
-    left: "© YY"
+    left: "© YY Khoo"
     right: "Built with Quarto"
 
 format:

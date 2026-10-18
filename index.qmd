@@ -1,5 +1,5 @@
 ---
-title: "YY"
+title: "YY Khoo"
 page-layout: article
 listing:
   id: latest-notes
