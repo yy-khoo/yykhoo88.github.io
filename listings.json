@@ -2,13 +2,24 @@
   {
     "listing": "/notes/index.html",
     "items": [
-      "/notes/european-call-greeks/index.html"
+      "/notes/european-call-greeks/index.html",
+      "/notes/sofr-curve/index.html",
+      "/notes/gamma-theta/index.html"
+    ]
+  },
+  {
+    "listing": "/archive/index.html",
+    "items": [
+      "/archive/wordpress-lightsail/index.html",
+      "/archive/seir-model/index.html"
     ]
   },
   {
     "listing": "/index.html",
     "items": [
-      "/notes/european-call-greeks/index.html"
+      "/notes/european-call-greeks/index.html",
+      "/notes/sofr-curve/index.html",
+      "/notes/gamma-theta/index.html"
     ]
   }
 ]

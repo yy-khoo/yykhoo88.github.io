@@ -162,6 +162,14 @@ window.Quarto = {
 <span class="menu-text">Notes</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="../projects.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../archive/index.html"> 
+<span class="menu-text">Archive</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
@@ -178,7 +186,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="RGVyaXZhdGl2ZXMlMjBSaXNrJTIwQXRsYXM=">Derivatives Risk Atlas <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TW9kZWwlMjBWYWxpZGF0aW9u">Model Validation <span class="quarto-category-count">(1)</span></div><div class="category" data-category="T3B0aW9ucw==">Options <span class="quarto-category-count">(1)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(3)</span></div><div class="category" data-category="RGVyaXZhdGl2ZXMlMjBSaXNrJTIwQXRsYXM=">Derivatives Risk Atlas <span class="quarto-category-count">(1)</span></div><div class="category" data-category="SW50ZXJlc3QlMjBSYXRlcw==">Interest Rates <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TW9kZWwlMjBWYWxpZGF0aW9u">Model Validation <span class="quarto-category-count">(2)</span></div><div class="category" data-category="T3B0aW9ucw==">Options <span class="quarto-category-count">(2)</span></div><div class="category" data-category="UXVhbnRMaWI=">QuantLib <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -241,6 +249,54 @@ window.Quarto = {
 <a href="../notes/european-call-greeks/index.html" class="no-external">
 <div class="listing-date">
 Sep 11, 2026
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-categories="SW50ZXJlc3QlMjBSYXRlcyUyQ1F1YW50TGli" data-listing-date-sort="1693670400000" data-listing-file-modified-sort="1792301707553" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="360">
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="../notes/sofr-curve/index.html" class="no-external">Bootstrapping a SOFR Curve with QuantLib</a>
+</h3>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('SW50ZXJlc3QlMjBSYXRlcw=='); return false;">Interest Rates</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('UXVhbnRMaWI='); return false;">QuantLib</div>
+
+</div>
+<div class="delink listing-description"><a href="../notes/sofr-curve/index.html" class="no-external">
+<p>An early QuantLib exploration of SOFR curve bootstrapping and swap repricing.</p>
+</a></div>
+</div>
+<div class="metadata">
+<a href="../notes/sofr-curve/index.html" class="no-external">
+<div class="listing-date">
+Sep 3, 2023
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="2" data-categories="T3B0aW9ucyUyQ01vZGVsJTIwVmFsaWRhdGlvbg==" data-listing-date-sort="1693584000000" data-listing-file-modified-sort="1792301723728" data-listing-date-modified-sort="1792252800000" data-listing-reading-time-sort="2" data-listing-word-count-sort="297">
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="../notes/gamma-theta/index.html" class="no-external">The Option Gamma–Theta Relationship</a>
+</h3>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('T3B0aW9ucw=='); return false;">Options</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('TW9kZWwlMjBWYWxpZGF0aW9u'); return false;">Model Validation</div>
+
+</div>
+<div class="delink listing-description"><a href="../notes/gamma-theta/index.html" class="no-external">
+<p>Reading gamma, theta, and financing together through the Black–Scholes PDE.</p>
+</a></div>
+</div>
+<div class="metadata">
+<a href="../notes/gamma-theta/index.html" class="no-external">
+<div class="listing-date">
+Sep 2, 2023
 </div>
 </a>
 </div>
@@ -321,7 +377,7 @@ Sep 11, 2026
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/yykhoo88\.github\.io\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
