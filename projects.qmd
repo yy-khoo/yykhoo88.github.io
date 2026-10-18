@@ -39,7 +39,7 @@ The work appeared in [Physical Review A, **86**, 062509](https://doi.org/10.1103
 
 A 2020 exploration of an SEIR model using forward Euler integration. The original notebook is retained as a historical experiment, with a migration note identifying an inconsistency in its parameterisation.
 
-[Read the archived notebook](archive/seir-model/index.qmd).
+[Read the SEIR notebook](notes/seir-model/index.qmd).
 
 ### Blackjack simulation
 

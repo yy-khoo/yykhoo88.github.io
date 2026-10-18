@@ -4,7 +4,6 @@ date: 2020-05-23
 description: "A preserved 2020 walkthrough of a WordPress installation on Lightsail."
 categories:
   - Computing
-  - Archive
 execute:
   enabled: false
 ---

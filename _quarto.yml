@@ -5,7 +5,6 @@ project:
   render:
     - "*.qmd"
     - "notes/**/*.qmd"
-    - "archive/**/*.qmd"
 
 website:
   title: "YY Khoo"
@@ -18,8 +17,6 @@ website:
         href: notes/index.qmd
       - text: "Projects"
         href: projects.qmd
-      - text: "Archive"
-        href: archive/index.qmd
       - text: "About"
         href: about.qmd
   page-footer:

@@ -85,7 +85,7 @@ No base URL is hard-coded, so the same configuration works for both `username.gi
 
 ## Earlier website content
 
-The former finance posts now live in `notes/`; historical computing and SEIR articles live in `archive/`. `projects.qmd` replaces the older standalone project library. Migrated articles retain their original metadata dates and store their images alongside the article. The SEIR page preserves its historical outputs with a prominent parameterisation correction rather than presenting them as newly validated results.
+All articles live in `notes/`, organised by subject categories, including the historical computing and SEIR articles. `projects.qmd` replaces the older standalone project library. Migrated articles retain their original metadata dates and store their images alongside the article. The SEIR page preserves its historical outputs with a prominent parameterisation correction rather than presenting them as newly validated results.
 
 `OLD PAGES/` remains a local reference copy and is excluded from the project's explicit render list and publishing script's source list. The former Hello World post, unused legacy assets, old analytics, and broken download placeholders are not migrated.
 
