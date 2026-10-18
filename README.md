@@ -42,6 +42,8 @@ Publishing is manual: source pushes do not render or publish the website.
 
 ### PowerShell shortcut
 
+Stop any running `quarto preview` with **Ctrl+C** before publishing; simultaneous renders can conflict over generated HTML files.
+
 Create an empty GitHub repository first, then run `./publish.ps1` from PowerShell.
 On the first run it asks for the repository URL. Alternatively:
 

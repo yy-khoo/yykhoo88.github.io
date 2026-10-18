@@ -65,6 +65,19 @@ try {
     $repo = $Matches[3] -replace '\.git$', ''
     Write-Host "Publishing to $owner/$repo"
 
+    # A preview watcher can race with the publisher when both move rendered HTML.
+    $projectPath = [System.IO.Path]::GetFullPath($PSScriptRoot)
+    $previews = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+        Where-Object {
+            $_.Name -match '^(deno|quarto)\.exe$' -and
+            $_.CommandLine -and
+            $_.CommandLine.IndexOf($projectPath, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+            $_.CommandLine -match '\bpreview\b'
+        })
+    if ($previews.Count) {
+        throw 'A Quarto preview is running for this project. Stop it with Ctrl+C in its terminal, then rerun publish.ps1.'
+    }
+
     # Commit website sources only; local environments and rendered output stay excluded.
     Invoke-Git -GitArgs (@('add', '--') + $sources)
     & git diff --cached --quiet
