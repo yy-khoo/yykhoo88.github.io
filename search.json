@@ -1,0 +1,128 @@
+[
+  {
+    "objectID": "notes/index.html",
+    "href": "notes/index.html",
+    "title": "Notes",
+    "section": "",
+    "text": "A growing collection of short technical notes and numerical experiments.\n\n\n\n\n\n\n    \n      \n      \n    \n\n\n\n\n\nEuropean Call Greeks: A Visual Risk Map\n\n\n\nDerivatives Risk Atlas\n\nOptions\n\nModel Validation\n\n\n\nVisual intuition for Black–Scholes call value, delta, gamma, vega, and theta across spot, maturity, and volatility.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\n\n\nHello World\n\n\n\nNumerical Methods\n\n\n\nA first note to verify the publishing workflow, mathematics, Python execution, figures, and code highlighting.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "notes/european-call-greeks/index.html",
+    "href": "notes/european-call-greeks/index.html",
+    "title": "European Call Greeks: A Visual Risk Map",
+    "section": "",
+    "text": "Where does option risk actually live across spot and maturity?\nThe Black–Scholes formulas answer the pointwise question, but the location and concentration of risk are much easier to see in curves. I use a plain European call as a controlled case: a non-dividend-paying stock with \\(K=100\\), \\(r=3\\%\\), and \\(\\sigma=20\\%\\). The focus is not the formulas themselves, but how quickly the risk profile changes as expiry approaches."
+  },
+  {
+    "objectID": "notes/european-call-greeks/index.html#reference-setup",
+    "href": "notes/european-call-greeks/index.html#reference-setup",
+    "title": "European Call Greeks: A Visual Risk Map",
+    "section": "Reference setup",
+    "text": "Reference setup\nThe call value is\n\\[\nC(S,K,T,r,\\sigma)=S N(d_1)-K e^{-rT}N(d_2),\n\\]\nwhere\n\\[\n\\begin{aligned}\nd_1&=\\frac{\\ln(S/K)+(r+\\tfrac12\\sigma^2)T}{\\sigma\\sqrt{T}},\\\\\nd_2&=d_1-\\sigma\\sqrt{T}.\n\\end{aligned}\n\\]\nAll plots use the same \\(S\\in[50,150]\\) grid and mark \\(S=K\\). I use 1,001 spot points because a coarse grid can make the one-week gamma profile look materially less concentrated than it is."
+  },
+  {
+    "objectID": "notes/european-call-greeks/index.html#start-with-the-value-curve",
+    "href": "notes/european-call-greeks/index.html#start-with-the-value-curve",
+    "title": "European Call Greeks: A Visual Risk Map",
+    "section": "Start with the value curve",
+    "text": "Start with the value curve\n\n\nShow Python\nfig, ax = plt.subplots()\nax.plot(spots, np.maximum(spots - K, 0.0), color=\"0.15\", linestyle=\":\", linewidth=2.0, label=\"Payoff\")\nfor label, maturity in maturities.items():\n    ax.plot(\n        spots,\n        call_price(spots, K, maturity, r, sigma),\n        label=label,\n        color=maturity_colors[label],\n        linewidth=1.8,\n    )\nfinish_spot_axis(ax, \"Call value\")\nax.legend(ncol=3, frameon=False)\nplt.show()\n\n\n\n\n\n\n\n\nFigure 1: Call value approaches the terminal payoff as maturity contracts.\n\n\n\n\n\nThe feature I would pay attention to is the width of the transition around the strike. It contracts sharply with maturity. The Greeks below are different views of that narrowing region."
+  },
+  {
+    "objectID": "notes/european-call-greeks/index.html#delta-the-transition-region",
+    "href": "notes/european-call-greeks/index.html#delta-the-transition-region",
+    "title": "European Call Greeks: A Visual Risk Map",
+    "section": "Delta: the transition region",
+    "text": "Delta: the transition region\n\n\nShow Python\nfig, ax = plt.subplots()\nplot_across_maturities(ax, call_delta, \"Delta\")\nax.set_ylim(-0.03, 1.03)\nplt.show()\n\n\n\n\n\n\n\n\nFigure 2: Call delta transitions from zero to one across the exercise boundary.\n\n\n\n\n\nFor reference, \\(\\Delta=N(d_1)\\). The levels near zero and one are not the interesting part of this chart. The useful information is where delta changes rapidly, and how narrow that region becomes near expiry. That is where a small spot move changes the hedge materially.\nThe transition is not centred mechanically on the cash strike. Rates, carry, volatility, and maturity enter through \\(d_1\\); even in this simple case, spot ATM does not imply a delta of exactly \\(0.5\\)."
+  },
+  {
+    "objectID": "notes/european-call-greeks/index.html#gamma-concentration-near-expiry",
+    "href": "notes/european-call-greeks/index.html#gamma-concentration-near-expiry",
+    "title": "European Call Greeks: A Visual Risk Map",
+    "section": "Gamma: concentration near expiry",
+    "text": "Gamma: concentration near expiry\n\n\nShow Python\nfig, ax = plt.subplots()\nplot_across_maturities(ax, call_gamma, \"Gamma\")\nplt.show()\n\n\n\n\n\n\n\n\nFigure 3: Short maturity concentrates gamma near the strike.\n\n\n\n\n\nThe analytic reference is\n\\[\n\\Gamma=\\frac{\\partial^2 C}{\\partial S^2}\n=\\frac{\\phi(d_1)}{S\\sigma\\sqrt{T}}.\n\\]\nWhat I find useful here is how quickly gamma stops being a broad exposure and becomes a local one. At one week, most of the curvature sits in a narrow band near the strike. A position can cross that band in an ordinary spot move, so a hedge inferred from one point can age badly before the next rebalance.\nThis is also the first validation warning. The formula is smooth, but a grid or finite-difference bump that is wide relative to the peak will average over the very feature being measured."
+  },
+  {
+    "objectID": "notes/european-call-greeks/index.html#vega-similar-location-different-maturity-behaviour",
+    "href": "notes/european-call-greeks/index.html#vega-similar-location-different-maturity-behaviour",
+    "title": "European Call Greeks: A Visual Risk Map",
+    "section": "Vega: similar location, different maturity behaviour",
+    "text": "Vega: similar location, different maturity behaviour\nThe chart reports vega per one volatility point, i.e. \\(\\mathcal{V}/100\\).\n\n\nShow Python\nfig, ax = plt.subplots()\nplot_across_maturities(ax, lambda S, K, T, r, vol: call_vega(S, K, T, r, vol) / 100.0, \"Vega per 1 vol point\")\nplt.show()\n\n\n\n\n\n\n\n\nFigure 4: Vega is largest where the exercise outcome remains uncertain.\n\n\n\n\n\nPer unit change in volatility,\n\\[\n\\mathcal{V}=\\frac{\\partial C}{\\partial\\sigma}\n=S\\phi(d_1)\\sqrt{T}.\n\\]\nVega occupies roughly the same decision region as gamma, but maturity pushes the two exposures in opposite directions. Near expiry, gamma becomes taller and narrower while vega collapses because there is little time left for additional dispersion. Treating both as generic measures of “optionality” hides a useful distinction: gamma is becoming more acute precisely as vega is disappearing."
+  },
+  {
+    "objectID": "notes/european-call-greeks/index.html#theta-read-it-with-gamma",
+    "href": "notes/european-call-greeks/index.html#theta-read-it-with-gamma",
+    "title": "European Call Greeks: A Visual Risk Map",
+    "section": "Theta: read it with gamma",
+    "text": "Theta: read it with gamma\nThe chart scales annual calendar theta to a daily amount using \\(\\Theta/365\\).\n\n\nShow Python\nfig, ax = plt.subplots()\nplot_across_maturities(ax, lambda S, K, T, r, vol: call_theta(S, K, T, r, vol) / 365.0, \"Theta per calendar day\")\nplt.show()\n\n\n\n\n\n\n\n\nFigure 5: Daily theta becomes sharply negative around ATM near expiry.\n\n\n\n\n\nAnnual calendar theta is\n\\[\n\\Theta=-\\frac{S\\phi(d_1)\\sigma}{2\\sqrt{T}}\n-rKe^{-rT}N(d_2).\n\\]\nI would not read this plot independently of gamma. The sharp negative pocket near the strike is the carry cost attached to the same local curvature seen above. In the Black–Scholes PDE,\n\\[\n\\Theta+\\frac12\\sigma^2S^2\\Gamma+rS\\Delta-rV=0,\n\\]\nthe diffusion term associated with positive gamma is offset by theta and carry. The co-location matters more than either headline Greek: the position earns or loses most of its gamma/theta economics inside a shrinking spot interval."
+  },
+  {
+    "objectID": "notes/european-call-greeks/index.html#how-volatility-redistributes-risk",
+    "href": "notes/european-call-greeks/index.html#how-volatility-redistributes-risk",
+    "title": "European Call Greeks: A Visual Risk Map",
+    "section": "How volatility redistributes risk",
+    "text": "How volatility redistributes risk\nFix \\(T=1\\) year and vary \\(\\sigma\\). The issue is not only how much the option is worth, but where its risk sits across spot.\n\n\nShow Python\nvolatilities = {\"10%\": 0.10, \"20%\": 0.20, \"40%\": 0.40, \"60%\": 0.60}\nvol_colors = dict(zip(volatilities, plt.cm.cividis(np.linspace(0.08, 0.9, len(volatilities)))))\npanels = [\n    (call_price, \"Call value\", \"PV\"),\n    (call_delta, \"Delta\", \"Delta\"),\n    (call_gamma, \"Gamma\", \"Gamma\"),\n]\n\nfig, axes = plt.subplots(3, 1, sharex=True, figsize=(8, 10))\nfor ax, (measure, ylabel, title) in zip(axes, panels):\n    for label, vol in volatilities.items():\n        ax.plot(\n            spots,\n            measure(spots, K, 1.0, r, vol),\n            label=label,\n            color=vol_colors[label],\n            linewidth=1.8,\n        )\n    finish_spot_axis(ax, ylabel, xlabel=ax is axes[-1])\n    ax.set_title(title, loc=\"left\")\n\naxes[0].legend(ncol=4, frameon=False, title=\"Volatility\")\nfig.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 6: Higher volatility raises value and distributes the delta transition and gamma over a wider spot region.\n\n\n\n\n\nHigher volatility broadens the delta transition and distributes gamma across a wider spot range. At low volatility, the risk is more concentrated. Cash gamma contains a \\(1/S\\) scaling, so the peak need not sit exactly at the strike; in this setup it moves lower in spot as volatility rises. The practical point is that volatility changes where hedge risk sits, not only the option PV."
+  },
+  {
+    "objectID": "notes/european-call-greeks/index.html#numerical-verification",
+    "href": "notes/european-call-greeks/index.html#numerical-verification",
+    "title": "European Call Greeks: A Visual Risk Map",
+    "section": "Numerical verification",
+    "text": "Numerical verification\nAnalytic formulas are reference values, not independent evidence that an implementation is correct. The table compares analytic delta, gamma, and vega with central differences at \\(S\\in\\{80,100,120\\}\\), using \\(T=1\\), a spot bump of \\(0.10\\), and an absolute volatility bump of \\(10^{-4}\\) (one volatility basis point).\n\n\nShow Python\nrows = []\nfor spot in (80.0, 100.0, 120.0):\n    analytic = {\n        \"Delta\": float(call_delta(spot, K, 1.0, r, sigma)),\n        \"Gamma\": float(call_gamma(spot, K, 1.0, r, sigma)),\n        \"Vega\": float(call_vega(spot, K, 1.0, r, sigma)),\n    }\n    finite_difference = finite_difference_greeks(\n        spot,\n        K,\n        1.0,\n        r,\n        sigma,\n        spot_bump=0.10,\n        volatility_bump=1.0e-4,\n    )\n    for greek, key in ((\"Delta\", \"delta\"), (\"Gamma\", \"gamma\"), (\"Vega\", \"vega\")):\n        estimate = float(finite_difference[key])\n        rows.append((spot, greek, analytic[greek], estimate, abs(analytic[greek] - estimate)))\n\nassert max(row[4] for row in rows if row[1] == \"Delta\") &lt; 2.0e-6\nassert max(row[4] for row in rows if row[1] == \"Gamma\") &lt; 1.0e-7\nassert max(row[4] for row in rows if row[1] == \"Vega\") &lt; 1.0e-5\n\ntable = [\n    \"| Spot | Greek | Analytic | Central difference | Absolute error |\",\n    \"|---:|:---|---:|---:|---:|\",\n]\ntable.extend(\n    f\"| {spot:.0f} | {greek} | {exact:.8f} | {estimate:.8f} | {error:.2e} |\"\n    for spot, greek, exact, estimate, error in rows\n)\ndisplay(Markdown(\"\\n\".join(table)))\n\n\n\n\nTable 1\n\n\n\n\n\n\nSpot\nGreek\nAnalytic\nCentral difference\nAbsolute error\n\n\n\n\n80\nDelta\n0.19332248\n0.19332367\n1.19e-06\n\n\n80\nGamma\n0.01714136\n0.01714132\n3.85e-08\n\n\n80\nVega\n21.94094409\n21.94094230\n1.79e-06\n\n\n100\nDelta\n0.59870633\n0.59870560\n7.25e-07\n\n\n100\nGamma\n0.01933341\n0.01933338\n2.85e-08\n\n\n100\nVega\n38.66681168\n38.66681156\n1.25e-07\n\n\n120\nDelta\n0.87730259\n0.87730179\n8.01e-07\n\n\n120\nGamma\n0.00846633\n0.00846634\n1.38e-08\n\n\n120\nVega\n24.38301754\n24.38301537\n2.18e-06\n\n\n\n\n\n\n\n\nThe agreement is strong, but these are deliberately benign test points: one-year maturity, liquid-looking spots, and fixed bumps chosen for this scale. They confirm the formulas and finite-difference implementation are consistent here; they do not establish that the same bumps remain suitable across the surface.\nFrom a validation perspective, the difficult region is short maturity and close to the strike. Gamma is then estimated from the small residual of three similar PVs. A wide spot bump smooths across the peak; a very narrow bump exposes floating-point cancellation. Vega has the analogous problem when the volatility bump produces a PV change close to numerical precision. A pointwise pass at \\(T=1\\) can therefore coexist with poor numerical Greeks in the part of the surface where risk is most concentrated.\nFor a put on the same stock, put–call parity gives \\(\\Delta_{\\text{put}}=\\Delta_{\\text{call}}-1\\); gamma and vega are the same under this model. The risk-shape discussion therefore carries across without duplicating the plots.\nThe next test is a bump-size sweep at one week around \\(S=K\\): where does truncation error give way to cancellation, and how should the bump scale with the width of the gamma peak?"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "This site contains concise technical notes and numerical experiments related to quantitative finance, derivatives, model risk, market risk, and numerical methods.\nThe content is a work in progress and will grow one note at a time."
+  },
+  {
+    "objectID": "about.html#elsewhere",
+    "href": "about.html#elsewhere",
+    "title": "About",
+    "section": "Elsewhere",
+    "text": "Elsewhere\n\nGitHub — TODO: add profile URL\nLinkedIn — TODO: add profile URL"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "YY",
+    "section": "",
+    "text": "Technical notes on quantitative finance, derivatives, model validation, market risk, and numerical methods."
+  },
+  {
+    "objectID": "index.html#latest-notes",
+    "href": "index.html#latest-notes",
+    "title": "YY",
+    "section": "Latest Notes",
+    "text": "Latest Notes\n\n\n\n\n\nEuropean Call Greeks: A Visual Risk Map\n\n\n\nDerivatives Risk Atlas\n\nOptions\n\nModel Validation\n\n\n\nVisual intuition for Black–Scholes call value, delta, gamma, vega, and theta across spot, maturity, and volatility.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\n\n\nHello World\n\n\n\nNumerical Methods\n\n\n\nA first note to verify the publishing workflow, mathematics, Python execution, figures, and code highlighting.\n\n\n\n\n\nSep 11, 2026\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "notes/hello-world/index.html",
+    "href": "notes/hello-world/index.html",
+    "title": "Hello World",
+    "section": "",
+    "text": "This is the first note on the site. It exists to verify the complete authoring and publishing workflow before more substantial technical material is added."
+  },
+  {
+    "objectID": "notes/hello-world/index.html#mathematics",
+    "href": "notes/hello-world/index.html#mathematics",
+    "title": "Hello World",
+    "section": "Mathematics",
+    "text": "Mathematics\nThe Black–Scholes call-price expression provides a compact test of mathematical rendering:\n\\[\nC = S_0 N(d_1) - K e^{-rT} N(d_2).\n\\]"
+  },
+  {
+    "objectID": "notes/hello-world/index.html#python-execution-and-figures",
+    "href": "notes/hello-world/index.html#python-execution-and-figures",
+    "title": "Hello World",
+    "section": "Python execution and figures",
+    "text": "Python execution and figures\nThe following cell executes during rendering and produces a small plot of \\(y=x^2\\).\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.linspace(-3, 3, 61)\ny = x**2\n\nfig, ax = plt.subplots(figsize=(6, 3.5))\nax.plot(x, y, color=\"#24527a\", linewidth=2)\nax.set(xlabel=\"x\", ylabel=\"y\", title=r\"$y = x^2$\")\nax.grid(alpha=0.2)\nplt.show()\n\n\n\n\n\n\n\nFigure 1: A simple numerical plot of y = x²."
+  },
+  {
+    "objectID": "notes/hello-world/index.html#syntax-highlighting",
+    "href": "notes/hello-world/index.html#syntax-highlighting",
+    "title": "Hello World",
+    "section": "Syntax highlighting",
+    "text": "Syntax highlighting\nThis non-executing block confirms that ordinary source code is highlighted correctly:\ndef square(value: float) -&gt; float:\n    \"\"\"Return the square of a number.\"\"\"\n    return value**2"
+  }
+]

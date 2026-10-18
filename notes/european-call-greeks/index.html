@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-09-11">
+<meta name="description" content="Visual intuition for Black–Scholes call value, delta, gamma, vega, and theta across spot, maturity, and volatility.">
+
+<title>European Call Greeks: A Visual Risk Map – YY</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../assets/favicon.svg" rel="icon" type="image/svg+xml">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-2f5524832805d734b96ee676820b2dda.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../assets/styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">YY</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../notes/index.html"> 
+<span class="menu-text">Notes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#reference-setup" id="toc-reference-setup" class="nav-link active" data-scroll-target="#reference-setup">Reference setup</a></li>
+  <li><a href="#start-with-the-value-curve" id="toc-start-with-the-value-curve" class="nav-link" data-scroll-target="#start-with-the-value-curve">Start with the value curve</a></li>
+  <li><a href="#delta-the-transition-region" id="toc-delta-the-transition-region" class="nav-link" data-scroll-target="#delta-the-transition-region">Delta: the transition region</a></li>
+  <li><a href="#gamma-concentration-near-expiry" id="toc-gamma-concentration-near-expiry" class="nav-link" data-scroll-target="#gamma-concentration-near-expiry">Gamma: concentration near expiry</a></li>
+  <li><a href="#vega-similar-location-different-maturity-behaviour" id="toc-vega-similar-location-different-maturity-behaviour" class="nav-link" data-scroll-target="#vega-similar-location-different-maturity-behaviour">Vega: similar location, different maturity behaviour</a></li>
+  <li><a href="#theta-read-it-with-gamma" id="toc-theta-read-it-with-gamma" class="nav-link" data-scroll-target="#theta-read-it-with-gamma">Theta: read it with gamma</a></li>
+  <li><a href="#how-volatility-redistributes-risk" id="toc-how-volatility-redistributes-risk" class="nav-link" data-scroll-target="#how-volatility-redistributes-risk">How volatility redistributes risk</a></li>
+  <li><a href="#numerical-verification" id="toc-numerical-verification" class="nav-link" data-scroll-target="#numerical-verification">Numerical verification</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">European Call Greeks: A Visual Risk Map</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Derivatives Risk Atlas</div>
+    <div class="quarto-category">Options</div>
+    <div class="quarto-category">Model Validation</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Visual intuition for Black–Scholes call value, delta, gamma, vega, and theta across spot, maturity, and volatility.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 11, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Where does option risk actually live across spot and maturity?</strong></p>
+<p>The Black–Scholes formulas answer the pointwise question, but the location and concentration of risk are much easier to see in curves. I use a plain European call as a controlled case: a non-dividend-paying stock with <span class="math inline">\(K=100\)</span>, <span class="math inline">\(r=3\%\)</span>, and <span class="math inline">\(\sigma=20\%\)</span>. The focus is not the formulas themselves, but how quickly the risk profile changes as expiry approaches.</p>
+<section id="reference-setup" class="level2">
+<h2 class="anchored" data-anchor-id="reference-setup">Reference setup</h2>
+<p>The call value is</p>
+<p><span class="math display">\[
+C(S,K,T,r,\sigma)=S N(d_1)-K e^{-rT}N(d_2),
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+\begin{aligned}
+d_1&amp;=\frac{\ln(S/K)+(r+\tfrac12\sigma^2)T}{\sigma\sqrt{T}},\\
+d_2&amp;=d_1-\sigma\sqrt{T}.
+\end{aligned}
+\]</span></p>
+<p>All plots use the same <span class="math inline">\(S\in[50,150]\)</span> grid and mark <span class="math inline">\(S=K\)</span>. I use 1,001 spot points because a coarse grid can make the one-week gamma profile look materially less concentrated than it is.</p>
+</section>
+<section id="start-with-the-value-curve" class="level2">
+<h2 class="anchored" data-anchor-id="start-with-the-value-curve">Start with the value curve</h2>
+<div id="cell-fig-call-value-maturity" class="cell" data-fig-height="4.8" data-fig-width="8" data-execution_count="2">
+<details class="code-fold">
+<summary>Show Python</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>ax.plot(spots, np.maximum(spots <span class="op">-</span> K, <span class="fl">0.0</span>), color<span class="op">=</span><span class="st">"0.15"</span>, linestyle<span class="op">=</span><span class="st">":"</span>, linewidth<span class="op">=</span><span class="fl">2.0</span>, label<span class="op">=</span><span class="st">"Payoff"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> label, maturity <span class="kw">in</span> maturities.items():</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    ax.plot(</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        spots,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        call_price(spots, K, maturity, r, sigma),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        label<span class="op">=</span>label,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span>maturity_colors[label],</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span><span class="fl">1.8</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>finish_spot_axis(ax, <span class="st">"Call value"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>ax.legend(ncol<span class="op">=</span><span class="dv">3</span>, frameon<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="fig-call-value-maturity" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-call-value-maturity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-call-value-maturity-output-1.png" width="721" height="529" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-call-value-maturity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Call value approaches the terminal payoff as maturity contracts.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The feature I would pay attention to is the width of the transition around the strike. It contracts sharply with maturity. The Greeks below are different views of that narrowing region.</p>
+</section>
+<section id="delta-the-transition-region" class="level2">
+<h2 class="anchored" data-anchor-id="delta-the-transition-region">Delta: the transition region</h2>
+<div id="cell-fig-call-delta" class="cell" data-fig-height="4.8" data-fig-width="8" data-execution_count="3">
+<details class="code-fold">
+<summary>Show Python</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>plot_across_maturities(ax, call_delta, <span class="st">"Delta"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="op">-</span><span class="fl">0.03</span>, <span class="fl">1.03</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="fig-call-delta" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-call-delta-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-call-delta-output-1.png" width="725" height="529" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-call-delta-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Call delta transitions from zero to one across the exercise boundary.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>For reference, <span class="math inline">\(\Delta=N(d_1)\)</span>. The levels near zero and one are not the interesting part of this chart. The useful information is where delta changes rapidly, and how narrow that region becomes near expiry. That is where a small spot move changes the hedge materially.</p>
+<p>The transition is not centred mechanically on the cash strike. Rates, carry, volatility, and maturity enter through <span class="math inline">\(d_1\)</span>; even in this simple case, spot ATM does not imply a delta of exactly <span class="math inline">\(0.5\)</span>.</p>
+</section>
+<section id="gamma-concentration-near-expiry" class="level2">
+<h2 class="anchored" data-anchor-id="gamma-concentration-near-expiry">Gamma: concentration near expiry</h2>
+<div id="cell-fig-call-gamma" class="cell" data-fig-height="4.8" data-fig-width="8" data-execution_count="4">
+<details class="code-fold">
+<summary>Show Python</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>plot_across_maturities(ax, call_gamma, <span class="st">"Gamma"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="fig-call-gamma" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-call-gamma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-call-gamma-output-1.png" width="734" height="529" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-call-gamma-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Short maturity concentrates gamma near the strike.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The analytic reference is</p>
+<p><span class="math display">\[
+\Gamma=\frac{\partial^2 C}{\partial S^2}
+=\frac{\phi(d_1)}{S\sigma\sqrt{T}}.
+\]</span></p>
+<p>What I find useful here is how quickly gamma stops being a broad exposure and becomes a local one. At one week, most of the curvature sits in a narrow band near the strike. A position can cross that band in an ordinary spot move, so a hedge inferred from one point can age badly before the next rebalance.</p>
+<p>This is also the first validation warning. The formula is smooth, but a grid or finite-difference bump that is wide relative to the peak will average over the very feature being measured.</p>
+</section>
+<section id="vega-similar-location-different-maturity-behaviour" class="level2">
+<h2 class="anchored" data-anchor-id="vega-similar-location-different-maturity-behaviour">Vega: similar location, different maturity behaviour</h2>
+<p>The chart reports vega per one volatility point, i.e.&nbsp;<span class="math inline">\(\mathcal{V}/100\)</span>.</p>
+<div id="cell-fig-call-vega" class="cell" data-fig-height="4.8" data-fig-width="8" data-execution_count="5">
+<details class="code-fold">
+<summary>Show Python</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>plot_across_maturities(ax, <span class="kw">lambda</span> S, K, T, r, vol: call_vega(S, K, T, r, vol) <span class="op">/</span> <span class="fl">100.0</span>, <span class="st">"Vega per 1 vol point"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="fig-call-vega" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-call-vega-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-call-vega-output-1.png" width="725" height="529" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-call-vega-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Vega is largest where the exercise outcome remains uncertain.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Per unit change in volatility,</p>
+<p><span class="math display">\[
+\mathcal{V}=\frac{\partial C}{\partial\sigma}
+=S\phi(d_1)\sqrt{T}.
+\]</span></p>
+<p>Vega occupies roughly the same decision region as gamma, but maturity pushes the two exposures in opposite directions. Near expiry, gamma becomes taller and narrower while vega collapses because there is little time left for additional dispersion. Treating both as generic measures of “optionality” hides a useful distinction: gamma is becoming more acute precisely as vega is disappearing.</p>
+</section>
+<section id="theta-read-it-with-gamma" class="level2">
+<h2 class="anchored" data-anchor-id="theta-read-it-with-gamma">Theta: read it with gamma</h2>
+<p>The chart scales annual calendar theta to a daily amount using <span class="math inline">\(\Theta/365\)</span>.</p>
+<div id="cell-fig-call-theta" class="cell" data-fig-height="4.8" data-fig-width="8" data-execution_count="6">
+<details class="code-fold">
+<summary>Show Python</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>plot_across_maturities(ax, <span class="kw">lambda</span> S, K, T, r, vol: call_theta(S, K, T, r, vol) <span class="op">/</span> <span class="fl">365.0</span>, <span class="st">"Theta per calendar day"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="fig-call-theta" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-call-theta-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-call-theta-output-1.png" width="744" height="529" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-call-theta-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Daily theta becomes sharply negative around ATM near expiry.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Annual calendar theta is</p>
+<p><span class="math display">\[
+\Theta=-\frac{S\phi(d_1)\sigma}{2\sqrt{T}}
+-rKe^{-rT}N(d_2).
+\]</span></p>
+<p>I would not read this plot independently of gamma. The sharp negative pocket near the strike is the carry cost attached to the same local curvature seen above. In the Black–Scholes PDE,</p>
+<p><span class="math display">\[
+\Theta+\frac12\sigma^2S^2\Gamma+rS\Delta-rV=0,
+\]</span></p>
+<p>the diffusion term associated with positive gamma is offset by theta and carry. The co-location matters more than either headline Greek: the position earns or loses most of its gamma/theta economics inside a shrinking spot interval.</p>
+</section>
+<section id="how-volatility-redistributes-risk" class="level2">
+<h2 class="anchored" data-anchor-id="how-volatility-redistributes-risk">How volatility redistributes risk</h2>
+<p>Fix <span class="math inline">\(T=1\)</span> year and vary <span class="math inline">\(\sigma\)</span>. The issue is not only how much the option is worth, but where its risk sits across spot.</p>
+<div id="cell-fig-volatility-risk-map" class="cell" data-fig-height="10" data-fig-width="8" data-execution_count="7">
+<details class="code-fold">
+<summary>Show Python</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>volatilities <span class="op">=</span> {<span class="st">"10%"</span>: <span class="fl">0.10</span>, <span class="st">"20%"</span>: <span class="fl">0.20</span>, <span class="st">"40%"</span>: <span class="fl">0.40</span>, <span class="st">"60%"</span>: <span class="fl">0.60</span>}</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>vol_colors <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">zip</span>(volatilities, plt.cm.cividis(np.linspace(<span class="fl">0.08</span>, <span class="fl">0.9</span>, <span class="bu">len</span>(volatilities)))))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>panels <span class="op">=</span> [</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    (call_price, <span class="st">"Call value"</span>, <span class="st">"PV"</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    (call_delta, <span class="st">"Delta"</span>, <span class="st">"Delta"</span>),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    (call_gamma, <span class="st">"Gamma"</span>, <span class="st">"Gamma"</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">3</span>, <span class="dv">1</span>, sharex<span class="op">=</span><span class="va">True</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">10</span>))</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (measure, ylabel, title) <span class="kw">in</span> <span class="bu">zip</span>(axes, panels):</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> label, vol <span class="kw">in</span> volatilities.items():</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        ax.plot(</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            spots,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>            measure(spots, K, <span class="fl">1.0</span>, r, vol),</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>            label<span class="op">=</span>label,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span>vol_colors[label],</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>            linewidth<span class="op">=</span><span class="fl">1.8</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    finish_spot_axis(ax, ylabel, xlabel<span class="op">=</span>ax <span class="kw">is</span> axes[<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    ax.set_title(title, loc<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].legend(ncol<span class="op">=</span><span class="dv">4</span>, frameon<span class="op">=</span><span class="va">False</span>, title<span class="op">=</span><span class="st">"Volatility"</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="fig-volatility-risk-map" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-volatility-risk-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-volatility-risk-map-output-1.png" width="947" height="1187" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-volatility-risk-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Higher volatility raises value and distributes the delta transition and gamma over a wider spot region.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Higher volatility broadens the delta transition and distributes gamma across a wider spot range. At low volatility, the risk is more concentrated. Cash gamma contains a <span class="math inline">\(1/S\)</span> scaling, so the peak need not sit exactly at the strike; in this setup it moves lower in spot as volatility rises. The practical point is that volatility changes where hedge risk sits, not only the option PV.</p>
+</section>
+<section id="numerical-verification" class="level2">
+<h2 class="anchored" data-anchor-id="numerical-verification">Numerical verification</h2>
+<p>Analytic formulas are reference values, not independent evidence that an implementation is correct. The table compares analytic delta, gamma, and vega with central differences at <span class="math inline">\(S\in\{80,100,120\}\)</span>, using <span class="math inline">\(T=1\)</span>, a spot bump of <span class="math inline">\(0.10\)</span>, and an absolute volatility bump of <span class="math inline">\(10^{-4}\)</span> (one volatility basis point).</p>
+<div class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Show Python</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> spot <span class="kw">in</span> (<span class="fl">80.0</span>, <span class="fl">100.0</span>, <span class="fl">120.0</span>):</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    analytic <span class="op">=</span> {</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Delta"</span>: <span class="bu">float</span>(call_delta(spot, K, <span class="fl">1.0</span>, r, sigma)),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Gamma"</span>: <span class="bu">float</span>(call_gamma(spot, K, <span class="fl">1.0</span>, r, sigma)),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Vega"</span>: <span class="bu">float</span>(call_vega(spot, K, <span class="fl">1.0</span>, r, sigma)),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    finite_difference <span class="op">=</span> finite_difference_greeks(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        spot,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        K,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="fl">1.0</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        r,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        sigma,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        spot_bump<span class="op">=</span><span class="fl">0.10</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        volatility_bump<span class="op">=</span><span class="fl">1.0e-4</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> greek, key <span class="kw">in</span> ((<span class="st">"Delta"</span>, <span class="st">"delta"</span>), (<span class="st">"Gamma"</span>, <span class="st">"gamma"</span>), (<span class="st">"Vega"</span>, <span class="st">"vega"</span>)):</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        estimate <span class="op">=</span> <span class="bu">float</span>(finite_difference[key])</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        rows.append((spot, greek, analytic[greek], estimate, <span class="bu">abs</span>(analytic[greek] <span class="op">-</span> estimate)))</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">max</span>(row[<span class="dv">4</span>] <span class="cf">for</span> row <span class="kw">in</span> rows <span class="cf">if</span> row[<span class="dv">1</span>] <span class="op">==</span> <span class="st">"Delta"</span>) <span class="op">&lt;</span> <span class="fl">2.0e-6</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">max</span>(row[<span class="dv">4</span>] <span class="cf">for</span> row <span class="kw">in</span> rows <span class="cf">if</span> row[<span class="dv">1</span>] <span class="op">==</span> <span class="st">"Gamma"</span>) <span class="op">&lt;</span> <span class="fl">1.0e-7</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">max</span>(row[<span class="dv">4</span>] <span class="cf">for</span> row <span class="kw">in</span> rows <span class="cf">if</span> row[<span class="dv">1</span>] <span class="op">==</span> <span class="st">"Vega"</span>) <span class="op">&lt;</span> <span class="fl">1.0e-5</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> [</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"| Spot | Greek | Analytic | Central difference | Absolute error |"</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"|---:|:---|---:|---:|---:|"</span>,</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>table.extend(</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f"| </span><span class="sc">{</span>spot<span class="sc">:.0f}</span><span class="ss"> | </span><span class="sc">{</span>greek<span class="sc">}</span><span class="ss"> | </span><span class="sc">{</span>exact<span class="sc">:.8f}</span><span class="ss"> | </span><span class="sc">{</span>estimate<span class="sc">:.8f}</span><span class="ss"> | </span><span class="sc">{</span>error<span class="sc">:.2e}</span><span class="ss"> |"</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> spot, greek, exact, estimate, error <span class="kw">in</span> rows</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>display(Markdown(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>.join(table)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-greek-validation" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="8">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-greek-validation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1
+</figcaption>
+<div aria-describedby="tbl-greek-validation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-display cell-output-markdown">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Spot</th>
+<th style="text-align: left;">Greek</th>
+<th style="text-align: right;">Analytic</th>
+<th style="text-align: right;">Central difference</th>
+<th style="text-align: right;">Absolute error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">80</td>
+<td style="text-align: left;">Delta</td>
+<td style="text-align: right;">0.19332248</td>
+<td style="text-align: right;">0.19332367</td>
+<td style="text-align: right;">1.19e-06</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">80</td>
+<td style="text-align: left;">Gamma</td>
+<td style="text-align: right;">0.01714136</td>
+<td style="text-align: right;">0.01714132</td>
+<td style="text-align: right;">3.85e-08</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">80</td>
+<td style="text-align: left;">Vega</td>
+<td style="text-align: right;">21.94094409</td>
+<td style="text-align: right;">21.94094230</td>
+<td style="text-align: right;">1.79e-06</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">100</td>
+<td style="text-align: left;">Delta</td>
+<td style="text-align: right;">0.59870633</td>
+<td style="text-align: right;">0.59870560</td>
+<td style="text-align: right;">7.25e-07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">100</td>
+<td style="text-align: left;">Gamma</td>
+<td style="text-align: right;">0.01933341</td>
+<td style="text-align: right;">0.01933338</td>
+<td style="text-align: right;">2.85e-08</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">100</td>
+<td style="text-align: left;">Vega</td>
+<td style="text-align: right;">38.66681168</td>
+<td style="text-align: right;">38.66681156</td>
+<td style="text-align: right;">1.25e-07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">120</td>
+<td style="text-align: left;">Delta</td>
+<td style="text-align: right;">0.87730259</td>
+<td style="text-align: right;">0.87730179</td>
+<td style="text-align: right;">8.01e-07</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">120</td>
+<td style="text-align: left;">Gamma</td>
+<td style="text-align: right;">0.00846633</td>
+<td style="text-align: right;">0.00846634</td>
+<td style="text-align: right;">1.38e-08</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">120</td>
+<td style="text-align: left;">Vega</td>
+<td style="text-align: right;">24.38301754</td>
+<td style="text-align: right;">24.38301537</td>
+<td style="text-align: right;">2.18e-06</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The agreement is strong, but these are deliberately benign test points: one-year maturity, liquid-looking spots, and fixed bumps chosen for this scale. They confirm the formulas and finite-difference implementation are consistent here; they do not establish that the same bumps remain suitable across the surface.</p>
+<p>From a validation perspective, the difficult region is short maturity and close to the strike. Gamma is then estimated from the small residual of three similar PVs. A wide spot bump smooths across the peak; a very narrow bump exposes floating-point cancellation. Vega has the analogous problem when the volatility bump produces a PV change close to numerical precision. A pointwise pass at <span class="math inline">\(T=1\)</span> can therefore coexist with poor numerical Greeks in the part of the surface where risk is most concentrated.</p>
+<p>For a put on the same stock, put–call parity gives <span class="math inline">\(\Delta_{\text{put}}=\Delta_{\text{call}}-1\)</span>; gamma and vega are the same under this model. The risk-shape discussion therefore carries across without duplicating the plots.</p>
+<p>The next test is a bump-size sweep at one week around <span class="math inline">\(S=K\)</span>: where does truncation error give way to cancellation, and how should the bump scale with the width of the gamma peak?</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/yykhoo88\.github\.io\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© YY</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with Quarto</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
