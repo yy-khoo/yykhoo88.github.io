@@ -32,7 +32,7 @@ try {
         throw 'Run this script from a source branch, such as main.'
     }
     $sources = @('README.md', '.gitignore', '_quarto.yml', 'index.qmd', 'about.qmd',
-        'assets', 'notes', 'src', 'requirements.txt', 'publish.ps1')
+        'assets', 'notes', 'archive', 'projects.qmd', 'src', 'requirements.txt', 'publish.ps1')
     $staged = @(& git -c core.quotepath=false diff --cached --name-only --no-renames)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect staged sources.' }
     $unrelated = @($staged | Where-Object {

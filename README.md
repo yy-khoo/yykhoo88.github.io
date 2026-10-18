@@ -83,6 +83,12 @@ Official guide: https://quarto.org/docs/publishing/github-pages.html
 
 No base URL is hard-coded, so the same configuration works for both `username.github.io` and `username.github.io/repository-name` repositories.
 
+## Earlier website content
+
+The former finance posts now live in `notes/`; historical computing and SEIR articles live in `archive/`. `projects.qmd` replaces the older standalone project library. Migrated articles retain their original metadata dates and store their images alongside the article. The SEIR page preserves its historical outputs with a prominent parameterisation correction rather than presenting them as newly validated results.
+
+`OLD PAGES/` remains a local reference copy and is excluded from the project's explicit render list and publishing script's source list. The former Hello World post, unused legacy assets, old analytics, and broken download placeholders are not migrated.
+
 ## Add a note
 
 Create a folder under `notes/` and add an `index.qmd` file with metadata like this:

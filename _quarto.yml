@@ -2,6 +2,10 @@ project:
   type: website
   output-dir: _site
   execute-dir: project
+  render:
+    - "*.qmd"
+    - "notes/**/*.qmd"
+    - "archive/**/*.qmd"
 
 website:
   title: "YY Khoo"
@@ -12,6 +16,10 @@ website:
     left:
       - text: "Notes"
         href: notes/index.qmd
+      - text: "Projects"
+        href: projects.qmd
+      - text: "Archive"
+        href: archive/index.qmd
       - text: "About"
         href: about.qmd
   page-footer:

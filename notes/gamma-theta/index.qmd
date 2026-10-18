@@ -1,0 +1,48 @@
+---
+title: "The Option Gamma–Theta Relationship"
+date: 2023-09-02
+date-modified: 2026-10-18
+description: "Reading gamma, theta, and financing together through the Black–Scholes PDE."
+categories:
+  - Options
+  - Model Validation
+execute:
+  enabled: false
+---
+
+
+
+![](images/gamma-theta.png){width=300}
+
+Black–Scholes option traders often discuss the gamma–theta relationship. For a delta-hedged option, it helps explain the relationship between time decay and exposure to spot moves. To derive it, consider the Black–Scholes PDE.
+
+$$
+\begin{align}
+\frac{\partial V}{\partial t} + rS \frac{\partial V}{\partial S} + \frac{1}{2} \sigma^2 S^2 \frac{\partial^2 V}{\partial S^2}&= rV
+\end{align}
+$$
+
+Now let's put in the usual symbol for sensitivities,
+
+$$
+\begin{align}
+\theta + rS\Delta + \frac{1}{2} \sigma^2 S^2 \gamma &= rV \\
+\theta + \frac{1}{2} \sigma^2 S^2 \gamma &= r [V-S\Delta]
+\end{align}
+$$
+
+The right-hand side is the financing term. Delta hedging does not make the option's own $\Delta$ or $V$ zero: a hedge of $-\Delta$ shares produces a portfolio with value $V-S\Delta$.
+
+When the financing term $r(V-S\Delta)$ is negligible, for example in the zero-rate limit, the PDE gives the approximation
+
+$$
+\theta + \frac{1}{2}\sigma^2 S^2\gamma \approx 0.
+$$
+
+This relates calendar theta to the local curvature exposure. It does not imply that a delta-hedged position is riskless: realised spot moves, hedge frequency, and the model assumptions still matter.
+
+The math can go slightly further. See [Link](https://quant.stackexchange.com/questions/67821/how-to-derive-the-relationship-between-gamma-and-theta). However this formula is a useful estimation for the theta-gamma breakeven for an delta hedged option. Finally, just to build an intuition on this relationship, we read from Hull's book:
+
+> When gamma is positive, theta tends to be negative. The portfolio declines in value if there is no change in S, but increases in value if there is a large positive or negative change in S. When gamma is negative, theta tends to be positive and the reverse is true: the portfolio increases in value if there is no change in S but decreases in value if there is a large positive or negative change in S. As the absolute value of gamma increases, the sensitivity of the value of the portfolio to S increases.
+
+For a broader visual treatment, see [European Call Greeks: A Visual Risk Map](../european-call-greeks/index.qmd).
